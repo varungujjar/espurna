@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <title>Kenosis Solution| Indoor AirQuality</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C5CE7">
+  <!-- <link type="image" rel="icon" href="favicon.ico" inline> -->
+  <link rel="stylesheet" href="custom.css" inline>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="sidebar">
+      <ul class="nav">
+        <li> <a href="#" class="menu-link active" data="panel-dashboard"><span
+              class="icon dashboard"></span>Dashboard</a> </li>
+        <li> <a href="#" class="menu-link" data="panel-wifi"><span class="icon wifi"></span>WiFi</a> </li>
+        <li> <a href="#" class="menu-link" data="panel-mqtt"><span class="icon mqtt"></span>MQTT</a> </li>
+        <li class="enable-dev"> <a href="#" class="menu-link" data="panel-ntp"><span class="icon ntp"></span>Date & Time</a> </li>
+        <li class="enable-dev"> <a href="#" class="menu-link" data="panel-sensors"><span class="icon ntp"></span>Sensors</a> </li>
+        <li> <a href="#" class="menu-link" data="panel-admin"><span class="icon general"></span>Admin</a>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="header">
+        <a href="#" class="sidebar-button">
+          <div class="sidebar-line"></div>
+          <div class="sidebar-line"></div>
+          <div class="sidebar-line sidebar-line-half"></div>
+        </a>
+        <div class="wrapper-content">
+          <div id="error-notification"></div>
+          <div class="header-info">
+            <h1>
+              Indoor AirQuality
+            </h1>
+            <h3 data-key="app_version">...</h3>
+          </div>
+        </div>
+      </div>
+      <div class="wrapper-content wrapper-overlap">
+
+
+       
+
+
+
+        <div id="panel-dashboard" class="panel">
+          <div class="card card-red wifiStatus">
+            <div class="card-icon">
+              <span class="icon icon-wifi"></span>
+            </div>
+            <div class="card-details">
+              <div class="card-inner">
+                <div class="card-details-title" data-key="network">...</div>
+                <div class="card-details-data m-1">
+                  <span class="card-details-unit text-bold" data-key="deviceip">...</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-config">
+              <a href="#" class="icon icon-settings menu-link" data="panel-wifi"></a>
+            </div>
+          </div>
+          <div class="card mqttStatus card-default">
+            <div class="card-icon">
+              <span class="icon icon-mqtt"></span>
+            </div>
+            <div class="card-details ">
+              <div class="card-inner">
+                <div class="card-details-title">MQTT</div>
+                <div class="card-details-data m-1">
+                  <span class="card-details-unit text-bold " data-key="mqttStatus">...</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-config">
+              <a href="#" class="icon icon-settings menu-link" data="panel-mqtt"></a>
+            </div>
+          </div>
+          <div class="card ntpStatus">
+            <div class="card-icon">
+              <span class="icon icon-clock"></span>
+            </div>
+            <div class="card-details">
+              <div class="card-inner">
+                <div class="card-details-title" data-key="now">0000-00-00 --:--:--</div>
+                <div class="card-details-data m-1">
+                  <span class="card-details-unit text-bold" data-key="ntpStatus">...</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-config enable-dev">
+              <a href="#" class="icon icon-settings menu-link" data="panel-ntp"></a>
+            </div>
+          </div>
+          <div id="magnitudes">
+          </div>
+        </div>
+        <div class="clr"></div>
+
+
+
+        <form id="form-admin" class="form-settings">
+          <div id="panel-admin" class="panel panel-bg">
+            <h1>Administrator</h1>
+            <h2>Web Security</h2>
+            <div class="wrapper-inner">
+              <div class="row">
+                <div class="col-md-6"> <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" class="form-control" placeholder="Leave Blank If No Password" name="adminPass0" data-action="reboot" autocomplete="false">
+                </div></div>
+                <div class="col-md-6"><div class="form-group">
+                  <label for="mqttPassword">Repeat Password</label>
+                  <input type="password" class="form-control" placeholder="Leave Blank If No Password" name="adminPass1" data-action="reboot" autocomplete="false">
+                </div></div>
+              </div>
+              <div class="note-info">
+                The administrator password is used to access this web interface (user 'admin'), but also to connect to the device when in AP mode or to flash a new firmware over-the-air (OTA).<br>
+                It must be <strong>8..63 characters</strong> (numbers and letters and any of these special characters: _,.;:~!?@#$%^&amp;*&lt;&gt;\|(){}[]) and have at least <strong>one lowercase</strong> and <strong>one uppercase</strong> or <strong>one number</strong>
+              </div>
+              </div>
+              <h2>General</h2>
+              <div class="wrapper-inner">
+                <div class="form-group">
+                  <label>Device Description</label>
+                  <input type="text" class="form-control" name="desc" maxlength="64">
+                </div>
+
+                <div class="row enable-dev">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Click repeat delay</label>
+                      <input type="number" class="form-control" name="btnRepDel" data-action="reboot" min="0" step="100" max="1000">
+                    </div>
+                  </div>
+                </div>
+                <div class="note-default enable-dev">
+                  Delay in milliseconds to detect a double or triple click (from 0 to 1000ms).<br>
+                  The lower this number the faster the device will respond to button clicks but the harder it will be to get the expected event. Increase this number if you are having trouble triggering the event. Set this value to 0 to disable repeat detection, device will respond immediately to a single button click. 
+                  <br></br>You will have to reboot the device to apply this setting.
+                </div>
+                </div>
+
+                <div class="enable-dev">
+              <h2>Web Services</h2>
+            <div class="wrapper-inner">
+              <div class="form-group">
+                <label>HTTP port</label>
+                <input type="text" class="form-control" name="webPort" data-action="reboot">
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <span class="checkbox-label-bold">Enable WebSocket Authentication</span>
+                  <input type="checkbox" name="wsAuth" id="wsAuth" class="check-toggle" />
+                  <label for="wsAuth" class="checkbox-label"></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <span class="checkbox-label-bold">Enable HTTP API</span>
+                  <input type="checkbox" name="apiEnabled" id="apiEnabled" class="check-toggle" />
+                  <label for="apiEnabled" class="checkbox-label"></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <span class="checkbox-label-bold">Restful API</span>
+                  <input type="checkbox" name="apiRestFul" id="apiRestFul" class="check-toggle" />
+                  <label for="apiRestFul" class="checkbox-label"></label>
+                </div>
+              </div>
+              <div class="note-default">
+                If enabled, API requests to change a status (like a relay) must be done using PUT.<br>
+                If disabled you can issue them as GET requests (easier from a browser).
+            </div>
+              <div class="form-group">
+                  <label>HTTP API Key</label>
+                  <div class="input-group">
+                  <input type="text" class="form-control" name="apiKey">
+                  <button type="button" class="btn btn-primary button-apikey">Generate</button>
+                  </div>
+              </div>
+              <div class="note-default">
+                This is the key you will have to pass with every HTTP request to the API, either to get or write values.
+                All API calls must contain the <strong>apikey</strong> parameter with the value above.
+                To know what APIs are enabled do a call to <strong>/apis</strong>.
+              </div>
+              </div>
+              </div>
+
+              <h2>Backup & Restore</h2>
+            <div class="wrapper-inner">
+              <a href="" target="_blank" rel="noopener" id="downloader" class="btn btn-default button-settings-backup">Backup</a>
+              <button type="button" class="btn btn-default button-settings-restore">Restore</button>
+              <button type="button" class="btn btn-primary button-settings-factory">Factory Reset</button>
+              <button type="button" class="btn btn-primary button-settings-reboot">Reboot</button>
+              </div>
+              <h2>Upgrade Firmware</h2>
+            <div class="wrapper-inner">
+              <div class="input-group">
+                <input class="form-control" name="filename" type="text" readonly>
+                <input name="upgrade" type="file" class="hide">
+                <button type="button" class="btn btn-default button-upgrade-browse">Browse</button> 
+                <button type="button" class="btn btn-primary button-upgrade">Upgrade</button>
+              </div>
+             
+              <progress id="upgrade-progress" value="0" max="100"></progress>
+              
+              <div class="note-info m-20">
+                The device has <span data-key="free_size"></span> bytes available for OTA updates. If your image is larger than this consider doing a <a class="external" href="https://github.com/xoseperez/espurna/wiki/TwoStepUpdates"><strong>two-step update</strong></a>.
+              </div>
+              <div class="form-group m-20">
+                <button class="btn btn-lg btn-primary button-update">Save Settings</button>
+              </div>
+              </div>
+              </div>
+
+
+
+          <div id="panel-mqtt" class="panel panel-bg">
+            <h1>MQTT</h1>
+            <h2>Enable Service</h2>
+            <div class="wrapper-inner pb-0">
+              <div class="form-group">
+                <div class="form-check">
+                  <span class="checkbox-label-bold">Enable MQTT</span>
+                  <input type="checkbox" name="mqttEnabled" id="mqttEnabled" class="check-toggle" />
+                  <label for="mqttEnabled" class="checkbox-label"></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mqtt-enable">
+            <h2>MQTT Server </h2>
+            <div class="wrapper-inner pb-0">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="mqttServer">MQTT Broker</label>
+                    <input type="text" class="form-control" placeholder="IP Or Address Of Your Broker" name="mqttServer">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="mqttPort">MQTT Port</label>
+                    <input type="number" class="form-control" name="mqttPort" value="1883">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="mqttUser">MQTT User</label>
+                    <input type="text" class="form-control" placeholder="Leave Blank If No User" name="mqttUser">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="mqttPassword">MQTT Password</label>
+                    <input type="password" class="form-control" placeholder="Leave Blank If No Password" name="mqttPassword">
+                  </div>
+                </div>
+              </div>
+              <div class="note-default">MQTT User : You can use the following placeholders: {hostname}, {mac}</div>
+              <div class="form-group">
+                <label for="mqttClientID">MQTT Client ID</label>
+                <input type="text" class="form-control" name="mqttClientID">
+              </div>
+              <div class="note-default">If left empty the firmware will generate a client ID based on the serial number of the
+                chip.
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="mqttQoS">MQTT QoS</label>
+                    <select class="form-control" name="mqttQoS" tabindex="26">
+                      <option value="0">0: At most once</option>
+                      <option value="1">1: At least once</option>
+                      <option value="2">2: Exactly once</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <span class="checkbox-label-bold">MQTT Retain</span>
+                  <input type="checkbox" name="mqttRetain" id="mqttRetain" class="check-toggle" />
+                  <label for="mqttRetain" class="checkbox-label"></label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>MQTT Keep Alive</label>
+                <input class="form-control" type="number" name="mqttKeep" min="10" max="3600" tabindex="28" />
+              </div>
+              <div class="module module-mqttssl">
+                <div class="form-group">
+                  <div class="form-check"> <span class="checkbox-label-bold">Use Secure Connection (SSL)</span>
+                    <input type="checkbox" name="mqttUseSSL" id="mqttUseSSL" class="check-toggle" />
+                    <label for="mqttUseSSL" class="checkbox-label"></label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mqttFP">SSL Fingerprint</label>
+                  <input type="text" class="form-control" name="mqttFP" maxlength="59">
+                  <div class="note-info">
+                    This is the fingerprint for the SSL certificate of the server.<br />
+                    You can get it using <a href="https://www.grc.com/fingerprints.htm"
+                      target="_blank">https://www.grc.com/fingerprints.htm</a><br />
+                    or using openssl from a linux box by typing:<br /><br />
+                    <pre>$ openssl s_client -connect &lt;host&gt;:&lt;port&gt; &lt; /dev/null 2&gt;/dev/null | openssl x509 -fingerprint -noout -in /dev/stdin</pre>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>MQTT Root Topic</label>
+                <input class="form-control" name="mqttTopic" type="text" tabindex="31" />
+              </div>
+              <div class="note-default">
+                This is the root topic for this device. The {hostname} and {mac} placeholders will be replaced by the device
+                hostname and MAC address.<br>
+                - <strong>&lt;root&gt;/status</strong> The device will report a 1 to this topic every few minutes. Upon MQTT
+                disconnecting this will be set to 0.<br>
+                - Other values reported (depending on the build) are: <strong>firmware</strong> and <strong>version</strong>,
+                <strong>hostname</strong>, <strong>IP</strong>, <strong>MAC</strong>, signal strenth (<strong>RSSI</strong>),
+                <strong>uptime</strong> (in seconds), <strong>free heap</strong> and <strong>power supply</strong>.
+              </div>
+              <div class="form-group">
+                <div class="form-check"> <span class="checkbox-label-bold">Use JSON payload</span>
+                  <input type="checkbox" name="mqttUseJson" id="mqttUseJson" class="check-toggle" />
+                  <label for="mqttUseJson" class="checkbox-label"></label>
+                </div>
+                <div class="note-default">All messages (except the device status) will be included in a JSON payload along with
+                  the timestamp and hostname
+                  and sent under the <strong>&lt;root&gt;/data</strong> topic.<br />
+                  Messages will be queued and sent after 100ms, so different messages could be merged into a single
+                  payload.<br />
+                  Subscribtions will still be done to single topics.</div>
+              </div>
+            </div>
+          </div>
+            <div class="wrapper-inner">
+              <div class="form-group m-20">
+                <button class="btn btn-lg btn-primary button-update">Save Settings</button>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div id="panel-ntp" class="panel panel-bg">
+            <h1>Date & Time</h1>
+            <h2>Device Time</h2>
+            <div class="wrapper-inner">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="nowString">Device Time</label>
+                    <input type="text" class="form-control" name="nowString" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="nowLocalString">Device Local Time</label>
+                    <input type="text" class="form-control" name="nowLocalString" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2>NTP Server</h2>
+            <div class="wrapper-inner">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="ntpServer">NTP Server</label>
+                    <input type="text" class="form-control" name="ntpServer">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="ntpTZ">Time Zone</label>
+                    <input type="text" class="form-control" name="ntpTZ">
+                  </div>
+                </div>
+              </div>
+              <div class="note-default">
+                POSIX TZ variable, defaults to <code>UTC0</code><br>For the list of possible values, <a class="external"
+                  href="https://github.com/esp8266/Arduino/blob/master/cores/esp8266/TZ.h">see esp8266/Arduino's TZ.h (use the
+                  value inside of quotes))</a>. For the complete documentation, <a class="external"
+                  href="https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html">see libc tzset(3) manual page</a>
+              </div>
+              <div class="form-group m-20">
+                <button class="btn btn-lg btn-primary button-update">Save Settings</button>
+              </div>
+            </div>
+          </div>
+
+
+          <div id="panel-sensors" class="panel panel-bg">
+            <h1>Sensors</h1>
+            <h2>General</h2>
+            <div class="wrapper-inner">
+              <div class="row">
+                <div class="col-md-6"><div class="form-group">
+                  <label>Read Interval</label>
+                  <select class="form-control" name="snsRead">
+                    <option value="1">1 Second</option>
+                    <option value="6">6 Seconds</option>
+                    <option value="10">10 Seconds</option>
+                    <option value="15">15 Seconds</option>
+                    <option value="30">30 Seconds</option>
+                    <option value="60">1 Minute</option>
+                    <option value="300">5 Minutes</option>
+                    <option value="600">10 Minutes</option>
+                    <option value="900">15 Minutes</option>
+                    <option value="1800">30 Minutes</option>
+                    <option value="3600">1 Hour</option>
+                  </select>
+                </div></div>
+                <div class="col-md-6"><div class="form-group">
+                  <label>Report aggregated value every</label>
+                  <input name="snsReport" type="number" min="1" step="1" max="60" class="form-control">
+                </div></div>
+              </div>
+              <div class="note-info">
+                Time between the attempts to read from the sensor. Please mind some sensors do not have refresh values very often, check the sensor datasheet to know the minimum read interval. The default and recommended value is 6 seconds.
+              </div>
+              <div class="form-check"> <span class="checkbox-label-bold">Realtime API</span>
+                <input type="checkbox" name="snsRealTime" id="snsRealTime" class="check-toggle" />
+                <label for="snsRealTime" class="checkbox-label"></label>
+              </div>
+              <div class="note-default">
+                Most magnitudes are being preprocessed and filtered to avoid spurious values.Enable this to get unfiltered values in the API (HTTP, MQTT, Prometheus, etc.)
+              </div>
+            </div>
+              <h2>Units</h2>
+              <div class="wrapper-inner">
+              <div id="magnitude-units"></div>
+
+              <div class="form-group m-20">
+                <button class="btn btn-lg btn-primary button-update">Save Settings</button>
+              </div>
+            </div>
+            
+             </div>
+            
+
+
+          <div id="panel-wifi" class="panel panel-bg">
+            <h1>Wi-Fi Network</h1>
+            <div class="enable-dev">
+              <h2>Fallack Access Point</h2>
+              <div class="wrapper-inner">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="wifiApSsid">SSID</label>
+                      <input type="text" class="form-control" name="wifiApSsid" maxlength="32" data-action="reboot">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="wifiApSsid">Password</label>
+                      <input type="text" class="form-control" name="wifiApPass" maxlength="32" data-action="reboot">
+                    </div>
+                  </div>
+                </div>
+                <div class="note-default">
+                  When specified you will see this as your Hostname when connecting in Soft-AP Mode.
+                </div>
+              </div>
+            </div>
+            <div class="enable-dev">
+              <h2>Scanning</h2>
+              <div class="wrapper-inner">
+                <div class="form-group">
+                  <div class="form-check">
+                    <span class="checkbox-label-bold">Enable Auto Scan</span>
+                    <input type="checkbox" name="wifiScan" id="wifiScan" class="check-toggle" />
+                    <label for="wifiScan" class="checkbox-label"></label>
+                  </div>
+                  <div class="note-default">
+                    This device will scan for visible WiFi SSIDs and try to connect to networks defined below in order of
+                    <strong>signal strength</strong>, even if multiple AP share the same SSID.
+                    When disabled, this device will try to connect to the networks in the same order they are listed below.
+                    Disable this option if you are <strong>connecting to a single access point</strong> (or router) or to a
+                    <strong>hidden SSID</strong>.
+                  </div>
+                  <div class="row m-30">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="wifiApSsid">RSSI threshold</label>
+                        <input type="number" class="form-control" name="wifiScanRssi" min="-128" max="0">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="note-default">
+                    When scanning is enabled, also periodically scan available networks when currently connected network RSSI is
+                    below this value.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2>Networks</h2>
+            <div class="wrapper-inner">
+              <div class="note-info m-0">
+                You can configure up to 5 different WiFi networks. The device will try to connect in order of signal
+                strength <br>
+                <div id="scanResult"></div>
+                <div class="clr"></div>
+                <div class="form-group m-20">
+                  <button class="btn btn-primary button-wifi-scan">Scan Available Networks</button>
+                </div>
+              </div>
+              </div>
+
+              <div class="wrapper-inner wrapper-dark">
+              <div id="networks"></div>
+              
+              <div class="form-group">
+                <button type="button" class="btn btn-default button-add-network  m-15" data-settings-group="networks">Add Network</button>
+              </div>
+            </div>
+
+              <div class="wrapper-inner">
+              <div class="form-group m-20">
+                <button class="btn btn-lg btn-primary button-update">Save Settings</button>
+              </div>
+            </div>
+          </div>
+
+
+        </form>
+        <div class="clr"></div>
+
+
+      </div>
+      <div class="footer">
+        <div class="wrapper-content">©2022 Sentron Labs.Designed & Engineered in India.</div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+  <template id="template-magnitude-card">
+    <div class="card">
+      <div class="card-icon">
+        <span class="icon"></span>
+      </div>
+      <div class="card-details">
+        <div class="card-inner">
+          <div class="card-details-title">...</div>
+          <div class="card-details-data">
+            <span class="card-details-value">...</span>
+            <span class="card-details-unit">...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+
+
+  <template id="template-magnitude-units">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="">...</label>
+          <select class="form-control"></select>
+        </div>
+      </div>
+    </div>
+    
+  </template>
+
+
+
+  <template id="template-wifi-card">
+    <div class="card wifi-card">
+      <div class="card-details">
+        <div class="card-inner">
+          <div class="card-details-title">
+            <h4>...</h4>
+          </div>
+        </div>
+      </div>
+      <div class="card-config">
+        <div class="icon icon-lock"></div>
+        <div class="icon icon-wifi"></div>
+      </div>
+    </div>
+  </template>
+
+  
+
+  <template id="template-network">
+    <div class="template-network card">
+      <div class="form-group">
+        <label for="ssid" class="label-network-name">Network Name</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="ssid" value="" data-action="reconnect" > 
+            <button class="btn btn-link button-more-network" type="button"><div class="icon icon-settings"></div></button>
+            <button class="btn btn-link button-del-network" type="button"><div class="icon icon-trash"></div></button>
+        </div>
+      </div>
+      <div class="template-network-more">
+            <div class="form-group">
+              <label for="pass">Password</label>
+              <input class="form-control" name="pass" type="password" data-action="reconnect" value="" autocomplete="false" />
+            </div>
+       
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="ip">Static IP</label>
+              <input class="form-control" placeholder="Auto" name="ip" type="text" data-action="reconnect" value="" maxlength="15" autocomplete="false" /> 
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="gw">Gateway IP</label>
+              <input class="form-control" placeholder="Auto" name="gw" type="text" data-action="reconnect" value="" maxlength="15" autocomplete="false" /> 
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="mask">Network Mask</label>
+              <input class="form-control" placeholder="255.255.255.0" name="mask" type="text" data-action="reconnect" value="255.255.255.0" maxlength="15" autocomplete="false" />
+                
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="dns">DNS IP</label>
+              <input class="form-control" name="dns" type="text" placeholder="8.8.8.8" data-action="reconnect" value="8.8.8.8" maxlength="15" autocomplete="false" /> 
+                
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-primary wifi-button-update">Save</button>
+        </div>
+       
+      </div>
+    </div>
+  </template>
+
+  <input id="uploader" type="file" class="hide">
+  <script src="dest/jquery.min.js" inline></script>
+  <script src="dest/bundle.js" inline></script>
+
+</body>
+</html>
