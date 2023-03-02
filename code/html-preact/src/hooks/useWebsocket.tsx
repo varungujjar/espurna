@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 
 class UrlsBase {
 	root: any;
@@ -21,16 +21,16 @@ class UrlsBase {
 }
 
 const useWebsocket = () => {
-	let ws: any;
+	const ws: any = useRef(null);
 	let WebsockPingPong: any = null;
 	const [onWebSocketMessage, setOnWebSocketMessage] = useState({});
 
-	const send = (payload: String) => {
-		ws.send(payload);
+	const webSocketSend = (payload: String) => {
+		ws.current.send(payload);
 	};
 
 	const sendAction = (action: any, data: any) => {
-		send(JSON.stringify({ action, data }));
+		webSocketSend(JSON.stringify({ action, data }));
 	};
 
 	function webSocketPing() {
@@ -44,7 +44,7 @@ const useWebsocket = () => {
 		} catch (e) {
 			// notifyError(null, null, 0, 0, e);
 		}
-		setOnWebSocketMessage((prev) => ({ ...prev, data }));
+		setOnWebSocketMessage((prev) => ({ ...data }));
 	};
 
 	const onWebSocketOpen = () => {
@@ -80,10 +80,10 @@ const useWebsocket = () => {
 		})
 			.then((response) => {
 				if (response.status === 200) {
-					ws = new WebSocket(urls.ws.href);
-					ws.onmessage = onWebSocketMessageFormat;
-					ws.onclose = onWebSocketClose;
-					ws.onopen = onWebSocketOpen;
+					ws.current = new WebSocket(urls.ws.href);
+					ws.current.onmessage = onWebSocketMessageFormat;
+					ws.current.onclose = onWebSocketClose;
+					ws.current.onopen = onWebSocketOpen;
 					// document.getElementById('downloader').href = urls.config.href;
 					return;
 				}
@@ -107,11 +107,11 @@ const useWebsocket = () => {
 		webSocketConnect();
 		return () => {
 			clearInterval(WebsockPingPong);
-			ws.disconnect();
+			ws.current.disconnect();
 		};
 	}, []);
 
-	return { onWebSocketMessage, onWebSocketClose, onWebSocketOpen };
+	return { onWebSocketMessage, webSocketSend, onWebSocketClose, onWebSocketOpen };
 };
 
 export default useWebsocket;
