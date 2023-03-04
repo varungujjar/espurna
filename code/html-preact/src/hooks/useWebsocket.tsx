@@ -105,6 +105,7 @@ const useWebsocket = () => {
 
 	useEffect(() => {
 		webSocketConnect();
+		console.log('remndering');
 		return () => {
 			clearInterval(WebsockPingPong);
 			ws.current.disconnect();
