@@ -44,7 +44,6 @@ body {
 .wrapper-content {
 	width: 740px;
 	margin: 0px auto;
-	padding: 0px 30px;
 }
 
 .wrapper-content::after {
@@ -62,7 +61,7 @@ body {
 	padding: 20px 30px;
 }
 .wrapper-overlap {
-	margin-top: -60px;
+	margin-top: -65px;
 	position: relative;
 }
 @media (max-width: 768px) {
@@ -119,13 +118,17 @@ body {
 /* *************************************************** */
 
 h1 {
-	font-size: 35px;
+	font-size: 32px;
+	padding: 0px;
+	margin: 0px;
+	line-height: 24px;
 }
 h2 {
 	font-size: 20px;
 }
 h3 {
 	font-weight: normal;
+	opacity: 0.5;
 	padding-top: 5px;
 }
 h4 {
@@ -223,13 +226,15 @@ ul.nav {
 /* Header */
 /* *************************************************** */
 .header {
-	background-color: #6c5ce7;
-	min-height: 230px;
+	background-color: #473d92;
+	min-height: 170px;
 	padding: 30px;
+	display: flex;
 }
 .header-info {
 	color: #fff;
-	padding-top: 20px;
+	position: relative;
+	left: -14px;
 }
 .clr {
 	clear: both;
@@ -343,8 +348,12 @@ ul.nav {
 /* Panels */
 /* *************************************************** */
 .panel {
-	display: block;
+	display: none;
 	margin-bottom: 15px;
+}
+
+.panel-show {
+	display: block !important;
 }
 
 #panel-dashboard {
@@ -366,11 +375,13 @@ ul.nav {
 	display: block;
 	padding: 20px 25px 20px 25px;
 }
+.panel-block {
+	border-top: 1px solid #ccc;
+	padding: 20px 25px 20px 25px;
+}
 .panel h2 {
 	color: #444;
-	border-top: 1px solid #ccc;
-	display: block;
-	padding: 20px 25px 20px 25px;
+	padding-bottom: 20px;
 }
 
 /* *************************************************** */
@@ -472,7 +483,7 @@ input[type='text']:read-only {
 .checkbox-label {
 	display: block;
 	position: relative;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	margin-top: 10px;
 	font-size: 12px;
 	line-height: 16px;
@@ -657,7 +668,7 @@ a.btn {
 .note-error,
 .note-success {
 	margin-bottom: 20px;
-	padding: 18px 25px;
+	padding: 15px 25px;
 	color: #222;
 	line-height: 20px;
 	border-radius: 3px;

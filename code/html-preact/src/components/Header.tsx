@@ -16,8 +16,8 @@ const Header = ({ sidebarClickHandler, selectedModule }: iHeader) => {
 			<div className="wrapper-content">
 				<div id="error-notification"></div>
 				<div className="header-info">
-					<h1>{MODULES[selectedModule]}</h1>
-					<h3 data-key="app_version">...</h3>
+					<h1>Sensor</h1>
+					<h3 data-key="app_version">Version 1.5.6</h3>
 				</div>
 			</div>
 		</div>

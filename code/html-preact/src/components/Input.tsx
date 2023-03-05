@@ -1,22 +1,41 @@
-import { Path, useForm, UseFormRegister, SubmitHandler } from 'react-hook-form';
-
 type InputProps = {
 	label: string;
 	name: string;
-	register: any;
+	type?: string;
+	min?: number;
+	max?: number;
+	placeholder?: string;
 	required?: boolean;
-	errors: any;
-	errorsMessage: string;
-	placeholder: string;
+	register: any;
+	errors?: any;
+	errorsMessage?: string;
 };
 
-const Input = ({ label, name, errors, placeholder, errorsMessage, register, required = false }: InputProps) => {
+const Input = ({
+	label,
+	name,
+	type = 'text',
+	min,
+	max,
+	placeholder,
+	required = false,
+	register,
+	errors,
+	errorsMessage,
+}: InputProps) => {
+	const numberLimit = { min: min, max: max };
+
 	return (
-		<>
+		<div className="form-group">
 			<label>{label}</label>
-			<input {...register(name, { required })} className="form-control" placeholder={placeholder} />
-			{errors[name] && errorsMessage}
-		</>
+			<input
+				{...register(name, { required, ...numberLimit })}
+				className="form-control"
+				placeholder={placeholder}
+				type={type}
+			/>
+			{errors && errors[name] && errorsMessage}
+		</div>
 	);
 };
 

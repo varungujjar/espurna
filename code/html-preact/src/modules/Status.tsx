@@ -1,12 +1,18 @@
 import { useEffect } from 'preact/hooks';
 
-export function Status({ onWebSocketMessage }: { onWebSocketMessage: any }) {
+interface IStatus {
+	onWebSocketMessage: any;
+	selectedModule: string;
+	onFormChange: any;
+}
+
+export function Status({ onWebSocketMessage, selectedModule, onFormChange }: IStatus) {
 	useEffect(() => {
 		// console.log(onWebSocketMessage);
 	}, [onWebSocketMessage]);
 
 	return (
-		<div id="panel-dashboard" className="panel">
+		<div className={`panel panel-bg ${selectedModule === 'status' && 'panel-show'}`}>
 			<div className="card card-red wifiStatus">
 				<div className="card-icon">
 					<span className="icon icon-wifi"></span>

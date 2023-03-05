@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'preact/hooks';
-import { Path, useForm, UseFormRegister, SubmitHandler } from 'react-hook-form';
+import { useEffect } from 'preact/hooks';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { onWebSocketMessageHandler, formDirtyFields, formReset } from '../helpers';
+import Panel from '../components/Panel';
+import PanelBlock from '../components/PanelBlock';
 import Input from '../components/Input';
+import Select from '../components/Select';
+import Checkbox from '../components/Checkbox';
+import Button from '../components/Button';
+import Note from '../components/Note';
 
-type IMqtt = {
+interface IMqtt {
 	onWebSocketMessage: any;
-	onChangeUpdate: any;
-	onSubmitHandler: any;
-};
-
+	selectedModule: string;
+	onFormChange: any;
+}
 interface IFormValues {
 	mqttEnabled: boolean;
 	mqttStatus: string;
@@ -23,7 +29,7 @@ interface IFormValues {
 	mqttUseJson: boolean;
 }
 
-export function Mqtt({ onWebSocketMessage, onChangeUpdate }: IMqtt) {
+export function Mqtt({ onWebSocketMessage, selectedModule, onFormChange }: IMqtt) {
 	const initFormData: IFormValues = {
 		mqttEnabled: false,
 		mqttStatus: '',
@@ -40,207 +46,136 @@ export function Mqtt({ onWebSocketMessage, onChangeUpdate }: IMqtt) {
 	};
 
 	const {
+		formState: { dirtyFields },
 		register,
 		handleSubmit,
 		setValue,
+		getValues,
+		reset,
 		formState: { errors },
 	} = useForm<IFormValues>({ defaultValues: { ...initFormData }, reValidateMode: 'onChange' });
 
-	const onWebSocketMessageHandler = (onWebSocketMessage: any) => {
-		console.log(onWebSocketMessage);
-		Object.keys(onWebSocketMessage).forEach((key) => {
-			const value = onWebSocketMessage[key];
-			const typeOfValue = typeof value;
-			Object.keys(initFormData).forEach((keyForm) => {
-				if (keyForm === key) {
-					setValue(keyForm as any, value);
-				}
-			});
-		});
-	};
-
-	const onSubmit: SubmitHandler<IFormValues> = (data) => {
-		console.log(data);
+	const onSubmit: SubmitHandler<IFormValues> = () => {
+		const dirtyFieldsObject = formDirtyFields(dirtyFields, getValues);
+		onFormChange(dirtyFieldsObject);
+		formReset(reset);
 	};
 
 	useEffect(() => {
-		onWebSocketMessageHandler(onWebSocketMessage);
-		console.log(onWebSocketMessage);
+		onWebSocketMessageHandler(onWebSocketMessage, setValue, initFormData);
 	}, [onWebSocketMessage]);
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<div id="panel-mqtt" className="panel panel-bg">
-				<h1>MQTT</h1>
-				<h2>Enable Service</h2>
-				<div className="wrapper-inner pb-0">
-					<div className="form-group">
-						<div className="form-check">
-							<span className="checkbox-label-bold">Enable MQTT</span>
-							<input type="checkbox" name="mqttEnabled" id="mqttEnabled" className="check-toggle" />
-							<label for="mqttEnabled" className="checkbox-label"></label>
-						</div>
-					</div>
-				</div>
+		<Panel name="mqtt" selectedModule={selectedModule}>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<PanelBlock title="Service">
+					<Checkbox label="Enable MQTT" name="mqttEnabled" register={register} />
+				</PanelBlock>
 
-				<div className="mqtt-enable">
-					<h2>MQTT Server </h2>
-					<div className="wrapper-inner pb-0">
-						<div className="row">
-							<div className="col-md-6">
-								<div className="form-group">
-									<Input
-										label="MQTT Broker"
-										placeholder="IP Or Address Of Your Broker"
-										name="mqttServer"
-										register={register}
-										errors={errors}
-										errorsMessage={'This is required.'}
-										required
-									/>
-								</div>
-							</div>
-							<div className="col-md-6">
-								<div className="form-group">
-									<Input
-										label="MQTT Port"
-										placeholder="1883"
-										name="mqttPort"
-										register={register}
-										errors={errors}
-										errorsMessage={'This is required.'}
-										required
-									/>
-								</div>
-							</div>
+				<PanelBlock title="MQTT Server">
+					<div className="row">
+						<div className="col-md-6">
+							<Input
+								label="MQTT Broker"
+								name="mqttServer"
+								placeholder="IP Or Address Of Your Broker"
+								register={register}
+								errors={errors}
+								errorsMessage={'This is required.'}
+								required
+							/>
 						</div>
-						<div className="row">
-							<div className="col-md-6">
-								<div className="form-group">
-									<Input
-										label="MQTT User"
-										placeholder=""
-										name="mqttUser"
-										register={register}
-										errors={errors}
-										errorsMessage={'This is required.'}
-										required={false}
-									/>
-								</div>
-							</div>
-							<div className="col-md-6">
-								<div className="form-group">
-									<Input
-										label="MQTT Password"
-										placeholder=""
-										name="mqttPassword"
-										register={register}
-										errors={errors}
-										errorsMessage={'This is required.'}
-									/>
-								</div>
-							</div>
-						</div>
-						<div className="note-default">MQTT User : You can use the following placeholders: hostname,mac </div>
-						<div className="form-group">
-							<label for="mqttClientID">MQTT Client ID</label>
-							<input type="text" className="form-control" name="mqttClientID" />
-						</div>
-						<div className="note-default">
-							If left empty the firmware will generate a client ID based on the serial number of the chip.
-						</div>
-						<div className="row">
-							<div className="col-md-6">
-								<div className="form-group">
-									<label for="mqttQoS">MQTT QoS</label>
-									<select className="form-control" name="mqttQoS">
-										<option value="0">0: At most once</option>
-										<option value="1">1: At least once</option>
-										<option value="2">2: Exactly once</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div className="form-group">
-							<div className="form-check">
-								<span className="checkbox-label-bold">MQTT Retain</span>
-								<input type="checkbox" name="mqttRetain" id="mqttRetain" className="check-toggle" />
-								<label for="mqttRetain" className="checkbox-label"></label>
-							</div>
-						</div>
-						<div className="form-group">
-							<label>MQTT Keep Alive</label>
-							<input className="form-control" type="number" name="mqttKeep" min="10" max="3600" />
-						</div>
-						<div className="module module-mqttssl">
-							<div className="form-group">
-								<div className="form-check">
-									<span className="checkbox-label-bold">Use Secure Connection (SSL)</span>
-									<input type="checkbox" name="mqttUseSSL" id="mqttUseSSL" className="check-toggle" />
-									<label for="mqttUseSSL" className="checkbox-label"></label>
-								</div>
-							</div>
-							<div className="form-group">
-								<label for="mqttFP">SSL Fingerprint</label>
-								<input type="text" className="form-control" name="mqttFP" />
-								<div className="note-info">
-									This is the fingerprint for the SSL certificate of the server.
-									<br />
-									You can get it using
-									<a href="https://www.grc.com/fingerprints.htm" target="_blank">
-										https://www.grc.com/fingerprints.htm
-									</a>
-									<br />
-									or using openssl from a linux box by typing:
-									<br />
-									<br />
-									<pre>
-										$ openssl s_client -connect &lt;host&gt;:&lt;port&gt; &lt; /dev/null 2&gt;/dev/null | openssl x509
-										-fingerprint -noout -in /dev/stdin
-									</pre>
-								</div>
-							</div>
-						</div>
-						<div className="form-group">
-							<label>MQTT Root Topic</label>
-							<input className="form-control" name="mqttTopic" type="text" />
-						</div>
-						<div className="note-default">
-							This is the root topic for this device. The hostname and mac placeholders will be replaced by the device
-							hostname and MAC address.
-							<br />- <strong>&lt;root&gt;/status</strong> The device will report a 1 to this topic every few minutes.
-							Upon MQTT disconnecting this will be set to 0.
-							<br />- Other values reported (depending on the build) are: <strong>firmware</strong> and
-							<strong>version</strong>,<strong>hostname</strong>, <strong>IP</strong>, <strong>MAC</strong>, signal
-							strenth (<strong>RSSI</strong>),
-							<strong>uptime</strong> (in seconds), <strong>free heap</strong> and <strong>power supply</strong>.
-						</div>
-						<div className="form-group">
-							<div className="form-check">
-								<span className="checkbox-label-bold">Use JSON payload</span>
-								<input type="checkbox" name="mqttUseJson" id="mqttUseJson" className="check-toggle" />
-								<label for="mqttUseJson" className="checkbox-label"></label>
-							</div>
-							<div className="note-default">
-								All messages (except the device status) will be included in a JSON payload along with the timestamp and
-								hostname and sent under the <strong>&lt;root&gt;/data</strong> topic.
-								<br />
-								Messages will be queued and sent after 100ms, so different messages could be merged into a single
-								payload.
-								<br />
-								Subscribtions will still be done to single topics.
-							</div>
+						<div className="col-md-6">
+							<Input
+								label="MQTT Port"
+								name="mqttPort"
+								placeholder="1883"
+								register={register}
+								errors={errors}
+								errorsMessage={'This is required.'}
+								required
+							/>
 						</div>
 					</div>
-				</div>
-				<div className="wrapper-inner">
-					<div className="form-group m-20">
-						<button className="btn btn-lg btn-primary" type="submit">
-							Save Settings
-						</button>
+					<div className="row">
+						<div className="col-md-6">
+							<Input label="MQTT User" name="mqttUser" register={register} />
+						</div>
+						<div className="col-md-6">
+							<Input label="MQTT Password" name="mqttPassword" register={register} />
+						</div>
 					</div>
-				</div>
-			</div>
-		</form>
+					<Note type="default">MQTT User : You can use the following placeholders: hostname,mac </Note>
+					<Input label="MQTT Client ID" name="mqttClientID" register={register} />
+					<Note type="default">
+						If left empty the firmware will generate a client ID based on the serial number of the chip.
+					</Note>
+					<div className="row">
+						<div className="col-md-6">
+							<Select
+								label="MQTT QoS"
+								name="mqttQoS"
+								options={{ 0: '0: At most once', 1: '1: At least once', 2: '2: Exactly once' }}
+								register={register}
+								errors={errors}
+							/>
+						</div>
+					</div>
+					<Checkbox label="MQTT Retain" name="mqttRetain" register={register} />
+					<Input
+						label="MQTT Keep Alive"
+						name="mqttKeep"
+						type="number"
+						register={register}
+						min={0}
+						max={3600}
+						errors={errors}
+						errorsMessage="Number to be between 0 and 3600"
+					/>
+					<div className="module module-mqttssl">
+						<Checkbox label="Use Secure Connection (SSL)" name="mqttUseSSL" register={register} />
+						<Input label="SSL Fingerprint" name="mqttFP" register={register} />
+						<Note type="info">
+							This is the fingerprint for the SSL certificate of the server.
+							<br />
+							You can get it using
+							<a href="https://www.grc.com/fingerprints.htm" target="_blank">
+								https://www.grc.com/fingerprints.htm
+							</a>
+							<br />
+							or using openssl from a linux box by typing:
+							<br />
+							<br />
+							<pre>
+								$ openssl s_client -connect &lt;host&gt;:&lt;port&gt; &lt; /dev/null 2&gt;/dev/null | openssl x509
+								-fingerprint -noout -in /dev/stdin
+							</pre>
+						</Note>
+					</div>
+					<Input label="MQTT Root Topic" name="mqttTopic" placeholder="<root>/<status>" register={register} />
+					<Note type="default">
+						This is the root topic for this device. The hostname and mac placeholders will be replaced by the device
+						hostname and MAC address.
+						<br />- <strong>&lt;root&gt;/status</strong> The device will report a 1 to this topic every few minutes.
+						Upon MQTT disconnecting this will be set to 0.
+						<br />- Other values reported (depending on the build) are: <strong>firmware</strong> and
+						<strong>version</strong>,<strong>hostname</strong>, <strong>IP</strong>, <strong>MAC</strong>, signal
+						strenth (<strong>RSSI</strong>),
+						<strong>uptime</strong> (in seconds), <strong>free heap</strong> and <strong>power supply</strong>.
+					</Note>
+					<Checkbox label="Use JSON payload" name="mqttUseJson" register={register} />
+					<Note type="default">
+						All messages (except the device status) will be included in a JSON payload along with the timestamp and
+						hostname and sent under the <strong>&lt;root&gt;/data</strong> topic.
+						<br />
+						Messages will be queued and sent after 100ms, so different messages could be merged into a single payload.
+						<br />
+						Subscribtions will still be done to single topics.
+					</Note>
+
+					<Button type="submit" text="Save Settings" />
+				</PanelBlock>
+			</form>
+		</Panel>
 	);
 }
